@@ -80,6 +80,7 @@ namespace SteamCloudFileManager
 
         public byte[] ReadAllBytes()
         {
+            if (Size <= 0) return new byte[0];
             byte[] buffer = new byte[Size];
             int read = Read(buffer, buffer.Length);
             if (read != buffer.Length) throw new IOException("Could not read entire file.");

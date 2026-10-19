@@ -215,3 +215,6 @@ $RECYCLE.BIN/
 *.msi
 *.msm
 *.msp
+
+# Generated resources from manual/resource tooling
+*.resources

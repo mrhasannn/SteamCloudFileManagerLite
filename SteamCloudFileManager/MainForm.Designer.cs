@@ -35,6 +35,7 @@
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.label1 = new System.Windows.Forms.Label();
             this.appIdTextBox = new System.Windows.Forms.TextBox();
             this.connectButton = new System.Windows.Forms.Button();
@@ -42,7 +43,11 @@
             this.quotaLabel = new System.Windows.Forms.Label();
             this.deleteButton = new System.Windows.Forms.Button();
             this.downloadButton = new System.Windows.Forms.Button();
+            this.uploadButton = new System.Windows.Forms.Button();
+            this.backupAllButton = new System.Windows.Forms.Button();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.uploadFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.backupFolderDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.SuspendLayout();
             // 
             // remoteListView
@@ -55,7 +60,8 @@
             this.columnHeader2,
             this.columnHeader3,
             this.columnHeader4,
-            this.columnHeader5});
+            this.columnHeader5,
+            this.columnHeader6});
             this.remoteListView.FullRowSelect = true;
             this.remoteListView.HideSelection = false;
             this.remoteListView.Location = new System.Drawing.Point(15, 41);
@@ -83,10 +89,15 @@
             // columnHeader4
             // 
             this.columnHeader4.Text = "Is Persisted";
-            // 
+            //
             // columnHeader5
-            // 
+            //
             this.columnHeader5.Text = "Exists";
+            //
+            // columnHeader6
+            //
+            this.columnHeader6.Text = "Sync Platforms";
+            this.columnHeader6.Width = 118;
             // 
             // label1
             // 
@@ -139,16 +150,16 @@
             // 
             this.deleteButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.deleteButton.Enabled = false;
-            this.deleteButton.Location = new System.Drawing.Point(93, 232);
+            this.deleteButton.Location = new System.Drawing.Point(280, 232);
             this.deleteButton.Name = "deleteButton";
             this.deleteButton.Size = new System.Drawing.Size(75, 23);
             this.deleteButton.TabIndex = 6;
             this.deleteButton.Text = "Delete";
             this.deleteButton.UseVisualStyleBackColor = true;
             this.deleteButton.Click += new System.EventHandler(this.deleteButton_Click);
-            // 
+            //
             // downloadButton
-            // 
+            //
             this.downloadButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.downloadButton.Enabled = false;
             this.downloadButton.Location = new System.Drawing.Point(12, 232);
@@ -158,17 +169,53 @@
             this.downloadButton.Text = "Download";
             this.downloadButton.UseVisualStyleBackColor = true;
             this.downloadButton.Click += new System.EventHandler(this.downloadButton_Click);
-            // 
+            //
+            // uploadButton
+            //
+            this.uploadButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.uploadButton.Enabled = false;
+            this.uploadButton.Location = new System.Drawing.Point(93, 232);
+            this.uploadButton.Name = "uploadButton";
+            this.uploadButton.Size = new System.Drawing.Size(75, 23);
+            this.uploadButton.TabIndex = 8;
+            this.uploadButton.Text = "Upload";
+            this.uploadButton.UseVisualStyleBackColor = true;
+            this.uploadButton.Click += new System.EventHandler(this.uploadButton_Click);
+            //
+            // backupAllButton
+            //
+            this.backupAllButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.backupAllButton.Enabled = false;
+            this.backupAllButton.Location = new System.Drawing.Point(174, 232);
+            this.backupAllButton.Name = "backupAllButton";
+            this.backupAllButton.Size = new System.Drawing.Size(100, 23);
+            this.backupAllButton.TabIndex = 9;
+            this.backupAllButton.Text = "Backup All...";
+            this.backupAllButton.UseVisualStyleBackColor = true;
+            this.backupAllButton.Click += new System.EventHandler(this.backupAllButton_Click);
+            //
             // saveFileDialog1
-            // 
+            //
             this.saveFileDialog1.Filter = "All files|*";
             this.saveFileDialog1.Title = "Save remote file as...";
+            //
+            // uploadFileDialog
+            //
+            this.uploadFileDialog.Filter = "All files|*";
+            this.uploadFileDialog.Title = "Upload file to Steam Cloud...";
+            //
+            // backupFolderDialog
+            //
+            this.backupFolderDialog.Description = "Select the folder in which the backup folder will be created.";
+            this.backupFolderDialog.ShowNewFolderButton = true;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(618, 267);
+            this.Controls.Add(this.backupAllButton);
+            this.Controls.Add(this.uploadButton);
             this.Controls.Add(this.downloadButton);
             this.Controls.Add(this.deleteButton);
             this.Controls.Add(this.remoteListView);
@@ -179,7 +226,7 @@
             this.Controls.Add(this.label1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
-            this.Text = "Steam Cloud File Manager";
+            this.Text = "Steam Cloud File Manager Lite";
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -197,10 +244,15 @@
         private System.Windows.Forms.Button connectButton;
         private System.Windows.Forms.Button refreshButton;
         private System.Windows.Forms.ColumnHeader columnHeader5;
+        private System.Windows.Forms.ColumnHeader columnHeader6;
         private System.Windows.Forms.Label quotaLabel;
         private System.Windows.Forms.Button deleteButton;
         private System.Windows.Forms.Button downloadButton;
+        private System.Windows.Forms.Button uploadButton;
+        private System.Windows.Forms.Button backupAllButton;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+        private System.Windows.Forms.OpenFileDialog uploadFileDialog;
+        private System.Windows.Forms.FolderBrowserDialog backupFolderDialog;
     }
 }
 

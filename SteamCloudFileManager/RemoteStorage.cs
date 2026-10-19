@@ -13,6 +13,7 @@ namespace SteamCloudFileManager
         static object sync = new object();
 
         internal bool IsDisposed { get; private set; }
+        internal uint AppId { get; private set; }
 
         public bool IsCloudEnabledForAccount
         {
@@ -39,22 +40,53 @@ namespace SteamCloudFileManager
 
         internal RemoteStorage(uint appID)
         {
+            AppId = appID;
             Environment.SetEnvironmentVariable("SteamAppID", appID.ToString());
             bool init = SteamAPI.Init();
+            string failureHint = null;
             if (!init)
             {
-                // Setting environment variable didn't work, so use steam_appid.txt instead
+                // Setting environment variable didn't work, so use steam_appid.txt instead.
+                // The file is only needed while SteamAPI.Init() runs, so always remove it again,
+                // even if something fails along the way.
+                bool wroteAppIdFile = false;
+                failureHint = "SteamAPI.Init() failed with SteamAppID environment variable as well as steam_appid.txt.";
                 try
                 {
                     File.WriteAllText("steam_appid.txt", appID.ToString());
-                    init = SteamAPI.Init();
-                    File.Delete("steam_appid.txt");
+                    wroteAppIdFile = true;
                 }
-                catch
-                { }
+                catch (Exception ex)
+                {
+                    failureHint = "Could not write steam_appid.txt into the working directory ("
+                        + Path.GetFullPath(".") + "): " + ex.Message
+                        + ". Make sure the directory is writable and not read-only.";
+                }
+                finally
+                {
+                    if (wroteAppIdFile)
+                    {
+                        try { File.Delete("steam_appid.txt"); }
+                        catch { /* best effort */ }
+                    }
+                }
+
+                if (wroteAppIdFile)
+                {
+                    init = SteamAPI.Init();
+                }
             }
 
-            if (!init) throw new Exception("Cannot initialize Steamworks API.");
+            if (!init)
+            {
+                throw new Exception(
+                    "Cannot initialize Steamworks API for App ID " + appID + ". " + failureHint + Environment.NewLine +
+                    "Check the following:" + Environment.NewLine +
+                    "- Steam is running and you are logged in." + Environment.NewLine +
+                    "- The App ID is correct (check it on steamdb.info)." + Environment.NewLine +
+                    "- The account has access to this app (e.g. it is in your library)." + Environment.NewLine +
+                    "- steam_api.dll is next to the exe and matches the architecture (32/64 bit).");
+            }
         }
 
         public List<IRemoteFile> GetFiles()
@@ -67,6 +99,7 @@ namespace SteamCloudFileManager
             {
                 int length;
                 string name = SteamRemoteStorage.GetFileNameAndSize(i, out length);
+                if (string.IsNullOrEmpty(name)) continue; // skip malformed entries instead of creating files with null names
                 RemoteFile file = new RemoteFile(this, name);
                 files.Add(file);
             }

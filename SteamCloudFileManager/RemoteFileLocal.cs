@@ -23,6 +23,7 @@ namespace SteamCloudFileManager
             try
             {
                 fi.Delete();
+                fi.Refresh(); // so a subsequent Exists check is not served from a stale cache
                 return true;
             }
             catch
@@ -33,7 +34,7 @@ namespace SteamCloudFileManager
 
         public bool Exists
         {
-            get { return fi.Exists; }
+            get { fi.Refresh(); return fi.Exists; }
         }
 
         public bool Forget()
@@ -63,13 +64,15 @@ namespace SteamCloudFileManager
         public byte[] ReadAllBytes()
         {
             byte[] buffer = new byte[Size];
-            Read(buffer, buffer.Length);
+            int read = Read(buffer, buffer.Length);
+            if (read != buffer.Length) throw new IOException("Could not read entire file.");
             return buffer;
         }
 
         public int Size
         {
-            get { return (int)fi.Length; }
+            // SteamRemoteStorage.GetFileSize returns 0 for missing files, mirror that.
+            get { fi.Refresh(); return fi.Exists ? (int)fi.Length : 0; }
         }
 
         public ERemoteStoragePlatform SyncPlatforms
@@ -93,10 +96,17 @@ namespace SteamCloudFileManager
         {
             try
             {
+                // The real Steam remote storage accepts names containing '/' without any
+                // preparation, so create missing sub directories here as well.
+                if (fi.DirectoryName != null && !Directory.Exists(fi.DirectoryName))
+                {
+                    Directory.CreateDirectory(fi.DirectoryName);
+                }
                 using (FileStream fs = fi.Create())
                 {
                     fs.Write(buffer, 0, count);
                 }
+                fi.Refresh();
                 return true;
             }
             catch

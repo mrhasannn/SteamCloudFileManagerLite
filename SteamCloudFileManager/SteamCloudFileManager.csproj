@@ -4,16 +4,19 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <!-- Steamworks.NET 5.0.0 ships the 32 bit steam_api.dll, so always build/run as x86.
+         This guarantees a 32 bit process even when Visual Studio defaults to AnyCPU on x64 Windows. -->
+    <PlatformTarget Condition="'$(PlatformTarget)' == ''">x86</PlatformTarget>
     <ProjectGuid>{58AAE4A4-3134-427E-A621-71DA133954E8}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SteamCloudFileManager</RootNamespace>
     <AssemblyName>SteamCloudFileManager</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,7 +26,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -51,10 +54,15 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>cloud.ico</ApplicationIcon>
+    <!-- Copy the native Steamworks library next to the exe; SteamAPI will not init without it.
+         Windows-only command, skipped on non-Windows build hosts (Linux/macOS CI). -->
+    <PostBuildEvent Condition="('$(OS)' == 'Windows_NT') And Exists('$(ProjectDir)..\libs\steam_api.dll')">if not exist "$(TargetDir)steam_api.dll" copy /Y "$(ProjectDir)..\libs\steam_api.dll" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Steamworks.NET">
-      <HintPath>..\..\..\..\..\..\Desktop\Steamworks.NET-Standalone_5.0.0\Windows-x86\Steamworks.NET.dll</HintPath>
+      <!-- Bundled in the repo's libs folder (Steamworks.NET 5.0.0, see libs\Steamworks.NET-LICENSE.txt) -->
+      <HintPath>..\libs\Steamworks.NET.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
