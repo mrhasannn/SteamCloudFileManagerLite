@@ -23,6 +23,7 @@ jobs:
           New-Item -ItemType Directory -Force -Path package | Out-Null
           Copy-Item SteamCloudFileManager/bin/Release/SteamCloudFileManager.exe package/
           Copy-Item SteamCloudFileManager/bin/Release/Steamworks.NET.dll package/
+          Copy-Item SteamCloudFileManager/bin/Release/CSteamworks.dll package/
           Copy-Item SteamCloudFileManager/bin/Release/steam_api.dll package/
           Copy-Item libs/Steamworks.NET-LICENSE.txt package/
           Copy-Item readme.md package/

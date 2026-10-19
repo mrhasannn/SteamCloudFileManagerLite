@@ -29,7 +29,7 @@ Building
 --------
 1. Open `SteamCloudFileManager.sln` in Visual Studio (2017 or later recommended; target framework .NET Framework 4.8).
 2. Build. `libs\Steamworks.NET.dll` is referenced from a relative path inside the repository, so no machine specific setup is needed.
-3. The post build step copies `libs\steam_api.dll` next to the exe automatically. Keep it in the same folder as the exe, otherwise `SteamAPI.Init()` will fail.
+3. The build copies `libs\Steamworks.NET.dll`, `libs\CSteamworks.dll` and `libs\steam_api.dll` next to the exe automatically (MSBuild `CopySteamRedist` target). All three must stay beside the exe, otherwise the app fails to load (`CSteamworks` / `steam_api.dll` not found).
 
 Alternatively build `SteamCloudFileManager.sln` with MSBuild or `msbuild /p:Configuration=Release` from a Developer Command Prompt.
 

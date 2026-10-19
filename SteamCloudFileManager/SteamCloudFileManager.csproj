@@ -60,7 +60,7 @@
        Visual Studio, Developer Command Prompt and CI (GitHub Actions). Windows only: the
        bundled steam_api.dll is the 32 bit Windows redist. -->
   <Target Name="CopySteamRedist" AfterTargets="Build" Condition="'$(OS)' == 'Windows_NT' And Exists('$(ProjectDir)..\libs\Steamworks.NET.dll')">
-    <Copy SourceFiles="$(ProjectDir)..\libs\Steamworks.NET.dll;$(ProjectDir)..\libs\steam_api.dll" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(ProjectDir)..\libs\Steamworks.NET.dll;$(ProjectDir)..\libs\CSteamworks.dll;$(ProjectDir)..\libs\steam_api.dll" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
   </Target>
   <ItemGroup>
     <Reference Include="Steamworks.NET">
