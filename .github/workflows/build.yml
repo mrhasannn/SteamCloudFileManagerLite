@@ -1,0 +1,42 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build (Release)
+        run: msbuild SteamCloudFileManager.sln /p:Configuration=Release /m /nologo /v:d
+
+      - name: Collect binaries
+        run: |
+          New-Item -ItemType Directory -Force -Path package | Out-Null
+          Copy-Item SteamCloudFileManager/bin/Release/SteamCloudFileManager.exe package/
+          Copy-Item SteamCloudFileManager/bin/Release/steam_api.dll package/
+          Copy-Item libs/Steamworks.NET-LICENSE.txt package/
+          Copy-Item readme.md package/
+          Compress-Archive -Path package/* -DestinationPath SteamCloudFileManager.zip
+        shell: powershell
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SteamCloudFileManager-${{ github.sha }}
+          path: SteamCloudFileManager.zip
+          if-no-files-found: error
+
+      - name: Release (only when a v* tag is pushed)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: SteamCloudFileManager.zip
