@@ -59,8 +59,8 @@
        Uses an MSBuild Copy task instead of a cmd post-build event so it behaves the same in
        Visual Studio, Developer Command Prompt and CI (GitHub Actions). Windows only: the
        bundled steam_api.dll is the 32 bit Windows redist. -->
-  <Target Name="CopySteamRedist" AfterTargets="Build" Condition="'$(OS)' == 'Windows_NT' And Exists('$(ProjectDir)..\libs\steam_api.dll')">
-    <Copy SourceFiles="$(ProjectDir)..\libs\steam_api.dll" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+  <Target Name="CopySteamRedist" AfterTargets="Build" Condition="'$(OS)' == 'Windows_NT' And Exists('$(ProjectDir)..\libs\Steamworks.NET.dll')">
+    <Copy SourceFiles="$(ProjectDir)..\libs\Steamworks.NET.dll;$(ProjectDir)..\libs\steam_api.dll" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
   </Target>
   <ItemGroup>
     <Reference Include="Steamworks.NET">
