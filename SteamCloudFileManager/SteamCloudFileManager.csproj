@@ -54,10 +54,14 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>cloud.ico</ApplicationIcon>
-    <!-- Copy the native Steamworks library next to the exe; SteamAPI will not init without it.
-         Windows-only command, skipped on non-Windows build hosts (Linux/macOS CI). -->
-    <PostBuildEvent Condition="('$(OS)' == 'Windows_NT') And Exists('$(ProjectDir)..\libs\steam_api.dll')">if not exist "$(TargetDir)steam_api.dll" copy /Y "$(ProjectDir)..\libs\steam_api.dll" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
+  <!-- Copy the native Steamworks library next to the exe; SteamAPI will not init without it.
+       Uses an MSBuild Copy task instead of a cmd post-build event so it behaves the same in
+       Visual Studio, Developer Command Prompt and CI (GitHub Actions). Windows only: the
+       bundled steam_api.dll is the 32 bit Windows redist. -->
+  <Target Name="CopySteamRedist" AfterTargets="Build" Condition="'$(OS)' == 'Windows_NT' And Exists('$(ProjectDir)..\libs\steam_api.dll')">
+    <Copy SourceFiles="$(ProjectDir)..\libs\steam_api.dll" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+  </Target>
   <ItemGroup>
     <Reference Include="Steamworks.NET">
       <!-- Bundled in the repo's libs folder (Steamworks.NET 5.0.0, see libs\Steamworks.NET-LICENSE.txt) -->
